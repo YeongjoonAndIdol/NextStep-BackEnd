@@ -1,25 +1,29 @@
 package com.prject.nextstep.global.security.jwt
 
+import com.nimbusds.oauth2.sdk.token.AccessTokenType
 import com.prject.nextstep.domain.user.entity.RefreshToken
 import com.prject.nextstep.domain.user.entity.repository.RefreshTokenRepository
-import io.jsonwebtoken.Jwts
-import io.jsonwebtoken.SignatureAlgorithm
+import com.prject.nextstep.global.security.principle.CustomUserDetailService
+import io.jsonwebtoken.*
 import io.jsonwebtoken.io.Decoders
 import io.jsonwebtoken.security.Keys
-import org.springframework.security.oauth2.core.user.OAuth2User
+import org.springframework.http.HttpHeaders
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
+import org.springframework.security.core.Authentication
 import org.springframework.stereotype.Component
+import org.springframework.util.StringUtils
 import java.security.Key
 import java.util.*
+import javax.servlet.http.HttpServletRequest
 
 @Component
 class JwtProviderImpl(
     private val jwtProperties: JwtProperties,
-    private val refreshTokenRepository: RefreshTokenRepository
+    private val refreshTokenRepository: RefreshTokenRepository,
+    private val userDetailsService: CustomUserDetailService
 ): JwtProvider {
 
     companion object {
-        private const val HEADER = "Authorization"
-        private const val PREFIX = "Bearer "
         private const val ACCESS = "access"
         private const val REFRESH = "refresh"
     }
@@ -57,5 +61,49 @@ class JwtProviderImpl(
             .setExpiration(expiredAt)
             .signWith(key, SignatureAlgorithm.HS512)
             .compact()
+    }
+
+    override fun resolveToken(request: HttpServletRequest): String {
+        val bearerToken = request.getHeader(HttpHeaders.AUTHORIZATION)
+
+        if (StringUtils.hasText(bearerToken) && bearerToken.startsWith(AccessTokenType.BEARER.value)) {
+            return bearerToken.substring(7)
+        }
+
+        return ""
+    }
+
+    override fun validateAccessToken(token: String): Boolean {
+        try {
+            Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token)
+            return true
+        } catch (e: SecurityException) {
+            println("올바르지 못한 토큰입니다.")
+        } catch (e: MalformedJwtException) {
+            println("올바르지 못한 토큰입니다.")
+        } catch (e: ExpiredJwtException) {
+            println("만료된 토큰입니다.")
+        } catch (e: UnsupportedJwtException) {
+            println("지원되지 않는 토큰입니다.")
+        } catch (e: IllegalArgumentException) {
+            println("잘못된 토큰입니다.")
+        }
+        return true
+    }
+
+    override fun findAuthentication(accessToken: String): Authentication {
+        val id = parseClaims(accessToken).subject
+
+        val userDetails = userDetailsService.loadUserByUsername(id)
+
+        return UsernamePasswordAuthenticationToken(userDetails, "")
+    }
+
+    private fun parseClaims(accessToken: String): Claims {
+        return try {
+            Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(accessToken).body
+        } catch (e: ExpiredJwtException) {
+            e.claims
+        }
     }
 }

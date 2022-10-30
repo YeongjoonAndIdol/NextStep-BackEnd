@@ -1,4 +1,4 @@
-package com.prject.nextstep.global.security
+package com.prject.nextstep.global.security.oauth
 
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest
@@ -6,9 +6,9 @@ import org.springframework.security.oauth2.core.user.OAuth2User
 import org.springframework.stereotype.Service
 
 @Service
-class CustomUserDetailService : DefaultOAuth2UserService() {
+class CustomOAuthDetailService : DefaultOAuth2UserService() {
 
-    override fun loadUser(userRequest: OAuth2UserRequest?): OAuth2User {
+    override fun loadUser(userRequest: OAuth2UserRequest): OAuth2User {
         return super.loadUser(userRequest)
     }
 }
