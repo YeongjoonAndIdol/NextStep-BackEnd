@@ -7,6 +7,8 @@ data class SearchQuestResponse(
 ) {
     data class QuestElement(
         val id: UUID,
-        val name: String
+        val name: String,
+        val isLiked: Boolean,
+        val likeCount: Long
     )
 }
