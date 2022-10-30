@@ -2,10 +2,14 @@ package com.prject.nextstep.domain.retrospects
 
 import com.prject.nextstep.domain.retrospects.dto.request.CreateRetrospectsRequest
 import com.prject.nextstep.domain.retrospects.dto.request.UpdateRetrospectsRequest
+import com.prject.nextstep.domain.retrospects.dto.response.GetRetrospectsResponse
 import com.prject.nextstep.domain.retrospects.service.CreateRetrospectsService
+import com.prject.nextstep.domain.retrospects.service.DeleteRetrospectsService
+import com.prject.nextstep.domain.retrospects.service.GetRetrospectsService
 import com.prject.nextstep.domain.retrospects.service.UpdateRetrospectsService
 import org.springframework.validation.annotation.Validated
 import org.springframework.web.bind.annotation.*
+import java.time.LocalDate
 import java.util.UUID
 import javax.validation.Valid
 
@@ -14,12 +18,14 @@ import javax.validation.Valid
 @RequestMapping("/retrospects")
 class RetrospectsController(
     private val createRetrospectsService: CreateRetrospectsService,
-    private val updateRetrospectsService: UpdateRetrospectsService
+    private val updateRetrospectsService: UpdateRetrospectsService,
+    private val getRetrospectsService: GetRetrospectsService,
+    private val deleteRetrospectsService: DeleteRetrospectsService
 ) {
 
-    @GetMapping
-    fun getRetrospects() {
-
+    @GetMapping("/{date}")
+    fun getRetrospects(@PathVariable date: LocalDate): GetRetrospectsResponse {
+        return getRetrospectsService.execute(date)
     }
 
     @PostMapping
@@ -32,8 +38,8 @@ class RetrospectsController(
         updateRetrospectsService.execute(retrospectsId, request.content)
     }
 
-    @DeleteMapping
-    fun deleteRetrospects() {
-        
+    @DeleteMapping("/{retrospects-id}")
+    fun deleteRetrospects(@PathVariable("retrospects-id") retrospectsId: UUID) {
+        deleteRetrospectsService.execute(retrospectsId)
     }
 }
