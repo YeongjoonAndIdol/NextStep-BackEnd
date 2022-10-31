@@ -9,6 +9,5 @@ data class UserSignInRequest(
     val accountId: String,
 
     @field:NotBlank
-    @field:Pattern(regexp = "/^(?=.*[a-zA-Z])(?=.*[!@#\$%^&*+=-])(?=.*[0-9]).{8,20}\$/")
     val password: String
 )

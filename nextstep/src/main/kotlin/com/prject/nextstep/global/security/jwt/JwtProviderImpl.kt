@@ -64,10 +64,12 @@ class JwtProviderImpl(
     }
 
     override fun resolveToken(request: HttpServletRequest): String {
-        val bearerToken = request.getHeader(HttpHeaders.AUTHORIZATION)
+        val bearerToken: String? = request.getHeader(HttpHeaders.AUTHORIZATION)
 
-        if (StringUtils.hasText(bearerToken) && bearerToken.startsWith(AccessTokenType.BEARER.value)) {
-            return bearerToken.substring(7)
+        bearerToken?.let {
+            if (StringUtils.hasText(bearerToken) && bearerToken.startsWith(AccessTokenType.BEARER.value)) {
+                return bearerToken.substring(7)
+            }
         }
 
         return ""

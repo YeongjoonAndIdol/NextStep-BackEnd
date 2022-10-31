@@ -23,20 +23,19 @@ class SecurityConfig(
     @Bean
     fun filterChain(http: HttpSecurity) : SecurityFilterChain {
         http
-            .csrf {
-                it.disable()
-            }
-            .httpBasic {
-                it.disable()
-            }
-            .sessionManagement {
-                it.sessionCreationPolicy(SessionCreationPolicy.NEVER) // #1
-            }
-            .oauth2Login {
-                it.userInfoEndpoint().userService(customUserDetailService) // #2
-                it.defaultSuccessUrl("/users/oauth/login") // #3
-                it.failureUrl("/fail")
-            }
+            .csrf().disable()
+            .cors().and()
+
+        http
+            .sessionManagement()
+            .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+
+        http
+//            .oauth2Login {
+//                it.userInfoEndpoint().userService(customUserDetailService) // #2
+//                it.defaultSuccessUrl("/users/oauth/login") // #3
+//                it.failureUrl("/fail")
+//            }
             .addFilterBefore(JwtFilter(jwtProvider), UsernamePasswordAuthenticationFilter::class.java)
 
         http
@@ -45,7 +44,7 @@ class SecurityConfig(
             .antMatchers(HttpMethod.GET, "/oauth2/authorization/google").permitAll()
             .antMatchers(HttpMethod.POST, "/users/signin").permitAll()
             .antMatchers(HttpMethod.POST, "/users/signup").permitAll()
-            .anyRequest().authenticated()
+            .anyRequest().permitAll()
         return http.build()
     }
 

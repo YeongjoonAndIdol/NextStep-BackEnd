@@ -9,7 +9,7 @@ import javax.persistence.*
 @Entity
 @Table(name = "tbl_retrospects",
     uniqueConstraints = [
-        UniqueConstraint(columnNames = arrayOf("date", "user"))
+        UniqueConstraint(columnNames = arrayOf("date", "user_id"))
     ]
 )
 class Retrospects(

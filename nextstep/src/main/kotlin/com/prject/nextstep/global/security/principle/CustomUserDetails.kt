@@ -8,7 +8,7 @@ class CustomUserDetails(
     val userId: UUID
 ) : UserDetails {
 
-    override fun getAuthorities() = arrayListOf(SimpleGrantedAuthority("NULL"))
+    override fun getAuthorities() = arrayListOf(SimpleGrantedAuthority("USER"))
 
     override fun getUsername() = userId.toString()
 
