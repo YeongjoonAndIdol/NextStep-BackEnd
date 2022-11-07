@@ -1,18 +1,26 @@
 package com.prject.nextstep.domain.user.entity
 
+import com.prject.nextstep.global.security.jwt.Authority
 import org.springframework.data.annotation.Id
 import org.springframework.data.redis.core.RedisHash
 import org.springframework.data.redis.core.TimeToLive
+import java.util.UUID
 import javax.validation.constraints.NotNull
 
 @RedisHash("tbl_refresh_token")
 data class RefreshToken(
-    @field:Id
-    val id: String,
 
-    @field:NotNull
+    @Id
     val token: String,
 
-    @field:TimeToLive
-    val timeToLive: Long
+    @field:NotNull
+    val userId: UUID,
+
+    @field:NotNull
+    val authority: Authority,
+
+    @field:NotNull
+    @TimeToLive
+    val expirationTime: Int
+
 )

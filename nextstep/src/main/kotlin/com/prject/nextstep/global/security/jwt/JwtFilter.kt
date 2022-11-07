@@ -1,35 +1,19 @@
 package com.prject.nextstep.global.security.jwt
 
-import com.nimbusds.oauth2.sdk.token.AccessTokenType
 import org.springframework.http.HttpHeaders
 import org.springframework.security.core.context.SecurityContextHolder
-import org.springframework.util.StringUtils
 import org.springframework.web.filter.OncePerRequestFilter
 import javax.servlet.FilterChain
 import javax.servlet.http.HttpServletRequest
 import javax.servlet.http.HttpServletResponse
 
 class JwtFilter(
-    private val jwtProvider: JwtProvider
+    private val jwtParser: JwtParser
 ) : OncePerRequestFilter() {
 
-//    override fun doFilterInternal(
-//        request: HttpServletRequest,
-//        response: HttpServletResponse,
-//        filterChain: FilterChain
-//    ) {
-//
-//        val jwt = jwtProvider.resolveToken(request)
-//
-//        if(StringUtils.hasText(jwt) && jwtProvider.validateAccessToken(jwt)) {
-//            val authentication = jwtProvider.findAuthentication(jwt)
-//            System.out.println("adsfafad")
-//            SecurityContextHolder.getContext().authentication = authentication
-//            System.out.println("adddsdfdsfsddsfafad")
-//        }
-//        System.out.println("324r32423")
-//        filterChain.doFilter(request, response)
-//    }
+    companion object {
+        private const val PREFIX = "Bearer "
+    }
 
     override fun doFilterInternal(
         request: HttpServletRequest,
@@ -37,21 +21,26 @@ class JwtFilter(
         filterChain: FilterChain
     ) {
         val token = resolvedToken(request)
-        SecurityContextHolder.getContext().authentication = jwtProvider.findAuthentication(token)
+
+        if(token != null) {
+            SecurityContextHolder.getContext().authentication = jwtParser.getAuthentication(token)
+        } else {
+            SecurityContextHolder.clearContext()
+        }
 
         filterChain.doFilter(request, response)
     }
 
-    private fun resolvedToken(request: HttpServletRequest): String {
+    private fun resolvedToken(request: HttpServletRequest): String? {
         val bearerToken: String? = request.getHeader(HttpHeaders.AUTHORIZATION)
 
         bearerToken?.let {
-            if (bearerToken.startsWith(AccessTokenType.BEARER.value)) {
-                return bearerToken.substring(7)
+            if (bearerToken.startsWith(PREFIX)) {
+                return bearerToken.substring(PREFIX.length)
             }
         }
 
-        return ""
+        return null
     }
 
 }

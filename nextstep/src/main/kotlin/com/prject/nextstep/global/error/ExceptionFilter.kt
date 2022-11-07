@@ -1,16 +1,23 @@
-package com.prject.nextstep.global.security.jwt
+package com.prject.nextstep.global.error
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import com.prject.nextstep.global.error.ErrorProperty
-import com.prject.nextstep.global.error.ErrorResponse
 import com.prject.nextstep.global.exception.CustomException
+import com.prject.nextstep.global.exception.InternalServerErrorException
 import org.springframework.http.MediaType
 import org.springframework.web.filter.OncePerRequestFilter
 import javax.servlet.FilterChain
 import javax.servlet.http.HttpServletRequest
 import javax.servlet.http.HttpServletResponse
 
-class ExceptionFilter(
+/**
+ *
+ * ExceptionFilter
+ *
+ * @author ljcha
+ * @date 2022-11-07
+ * @version 1.0.0
+ **/
+class GlobalExceptionFilter(
     private val objectMapper: ObjectMapper
 ) : OncePerRequestFilter() {
 
@@ -23,7 +30,7 @@ class ExceptionFilter(
             filterChain.doFilter(request, response)
         } catch (e: Exception) {
             when (e) {
-                is CustomException -> errorToJson((e.cause as CustomException).errorProperty, response)
+                is CustomException -> errorToJson(e.errorProperty, response)
                 else -> {
                     errorToJson(InternalServerErrorException.errorProperty, response)
                     e.printStackTrace()
@@ -36,6 +43,10 @@ class ExceptionFilter(
         response.status = errorProperty.status()
         response.characterEncoding = "UTF-8"
         response.contentType = MediaType.APPLICATION_JSON_VALUE
-        response.writer.write(objectMapper.writeValueAsString(ErrorResponse.of(errorProperty)))
+        response.writer.write(objectMapper.writeValueAsString(
+            ErrorResponse(
+                status = errorProperty.status(),
+                message = errorProperty.message())
+        ))
     }
 }

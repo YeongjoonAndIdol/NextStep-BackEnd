@@ -4,16 +4,6 @@ spring:
     password: ${DB_PASSWORD:cos1234}
     driver-class-name: com.mysql.cj.jdbc.Driver
     url: jdbc:mysql://${DB_URL:localhost}:3306/${DB_NAME:test}?useSSL=false&characterEncoding=UTF-8&serverTimezone=Asia/Seoul&allowPublicKeyRetrieval=true
-  security:
-    oauth2:
-      client:
-        registration:
-          google:
-            client-id: ${GOOGLE_CLIENT_ID:604607803018-isdibcvksnfbkff72kilo7deobjvuopl.apps.googleusercontent.com}
-            client-secret: ${GOOGLE_CLIENT_SECRET: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}
-            scope:
-              - email
-              - profile
   jpa:
     hibernate:
       ddl-auto: update

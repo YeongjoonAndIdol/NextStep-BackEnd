@@ -15,7 +15,14 @@ enum class ErrorCode(
     RETROSPECT_NOT_FOUND(404, "Retrospects Not Found"),
     RETROSPECTS_ALREADY_EXISTS(409, "Retrospects Already Exists"),
 
-    BAD_REQUEST(400, "Bad Request");
+    BAD_REQUEST(400, "Bad Request"),
+
+    INVALID_TOKEN(401, "Invalid Token"),
+    EXPIRED_TOKEN(401, "Expired Token"),
+    UNEXPECTED_TOKEN(401, "Unexpected Token"),
+    INVALID_ROLE(401, "Invalid Role"),
+
+    INTERNAL_SERVER_ERROR(500, "Internal Server Error");
 
     override fun status(): Int = status
     override fun message(): String = message

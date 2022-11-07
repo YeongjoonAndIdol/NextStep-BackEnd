@@ -7,11 +7,8 @@ import com.prject.nextstep.domain.user.dto.response.GetPerformanceResponse
 import com.prject.nextstep.domain.user.dto.response.GetSettingResponse
 import com.prject.nextstep.domain.user.dto.response.MyPageResponse
 import com.prject.nextstep.domain.user.service.*
-import com.prject.nextstep.global.security.jwt.JwtDto
+import com.prject.nextstep.global.security.jwt.TokenResponse
 import org.springframework.http.HttpStatus
-import org.springframework.http.ResponseEntity
-import org.springframework.security.core.annotation.AuthenticationPrincipal
-import org.springframework.security.oauth2.core.user.OAuth2User
 import org.springframework.validation.annotation.Validated
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PostMapping
@@ -25,7 +22,7 @@ import javax.validation.Valid
 @RestController
 @RequestMapping("/users")
 class UserController(
-    private val oauthLoginService: OauthLoginService,
+//    private val oauthLoginService: OauthLoginService,
     private val userSignUpService: UserSignUpService,
     private val userSignInService: UserSignInService,
     private val getMyPageService: GetMyPageService,
@@ -34,19 +31,19 @@ class UserController(
     private val getPerformanceService: GetPerformanceService
 ) {
 
-    @GetMapping("/oauth/login")
-    fun oauthLogin(@AuthenticationPrincipal oAuth2User: OAuth2User): ResponseEntity<JwtDto> {
-        return ResponseEntity.ok(oauthLoginService.execute(oAuth2User))
-    }
+//    @GetMapping("/oauth/login")
+//    fun oauthLogin(@AuthenticationPrincipal oAuth2User: OAuth2User): ResponseEntity<TokenResponse> {
+//        return ResponseEntity.ok(oauthLoginService.execute(oAuth2User))
+//    }
 
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping("/signup")
-    fun singUp(@RequestBody @Valid request: UserSignUpRequest): JwtDto {
+    fun singUp(@RequestBody @Valid request: UserSignUpRequest): TokenResponse {
         return userSignUpService.execute(request)
     }
 
     @PostMapping("/signin")
-    fun signIn(@RequestBody @Valid request: UserSignInRequest): JwtDto {
+    fun signIn(@RequestBody @Valid request: UserSignInRequest): TokenResponse {
         return userSignInService.execute(request)
     }
 
