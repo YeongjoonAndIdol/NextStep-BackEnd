@@ -22,12 +22,14 @@ class JwtFilter(
     ) {
         val token = resolvedToken(request)
 
+        print("111")
         if(token != null) {
             SecurityContextHolder.getContext().authentication = jwtParser.getAuthentication(token)
         } else {
             SecurityContextHolder.clearContext()
         }
 
+        print("222")
         filterChain.doFilter(request, response)
     }
 

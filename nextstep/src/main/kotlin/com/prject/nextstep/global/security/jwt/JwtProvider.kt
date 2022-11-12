@@ -42,7 +42,7 @@ class JwtProvider(
             .signWith(securityProperties.key, SignatureAlgorithm.HS512)
             .setHeaderParam(Header.JWT_TYPE, ACCESS)
             .setId(userId.toString())
-            .claim(AUTHORITY, authority.name)
+            .claim("authority", authority.name)
             .setIssuedAt(Date())
             .setExpiration(Date(System.currentTimeMillis() + securityProperties.accessExp))
             .compact()

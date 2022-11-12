@@ -20,12 +20,15 @@ class GetMyPageService(
     @Transactional(readOnly = true)
     fun execute(): MyPageResponse {
 
+        println("DSAds")
         val userId = securityUtils.getCurrentUserId()
         val user = userRepository.findByIdOrNull(userId) ?: throw UserNotFoundException
 
+        println("DSAds1")
         // TODO Query 개선
-        val ranking = userRepository.queryOnlyRanking().get(userId)
+//        val ranking = userRepository.queryOnlyRanking().get(userId)
 
+        println("DSAds2")
         val myQuest = myQuestRepository.findByIdUserIdAndIdDate(userId, LocalDate.now()).map {
             MyPageResponse.MyQuestElement(
                 id = it.id.questId,
@@ -38,7 +41,7 @@ class GetMyPageService(
             level = user.level,
             exp = user.exp,
             walkCount = user.walkCount,
-            ranking = ranking ?: 9999,
+            ranking = 1,
             myRoutine = myQuest
         )
     }

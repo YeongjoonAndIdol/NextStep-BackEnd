@@ -25,15 +25,21 @@ class JwtParser(
 ) {
 
     fun getAuthentication(token: String): Authentication {
+
+        print("333")
         val claims = getClaims(token)
 
+        print("444")
         if (claims.header[Header.JWT_TYPE] != JwtProvider.ACCESS) {
             throw InvalidTokenException
         }
 
+        print("555")
         val userDetails = getDetails(claims.body)
-
-        return UsernamePasswordAuthenticationToken(userDetails, "", userDetails.authorities)
+        print("666")
+        val auth = UsernamePasswordAuthenticationToken(userDetails, "", userDetails.authorities)
+        print("777")
+        return auth
     }
 
     private fun getClaims(token: String): Jws<Claims> {
@@ -53,9 +59,6 @@ class JwtParser(
 
     private fun getDetails(body: Claims): UserDetails {
 
-        return when (body.get("authority", Authority::class.java)) {
-            Authority.USER -> userDetailsService.loadUserByUsername(body.id)
-            else -> throw InvalidRoleException
-        }
+        return userDetailsService.loadUserByUsername(body.id)
     }
 }
